@@ -1,4 +1,10 @@
-import math
-for i in range(1,1000):
-    if i == math.pow((i//100),3)+math.pow(((i%100)//10),3)+math.pow(i%10,3) == i:
-        print(i)
+import http.server
+import socketserver
+
+PORT = 5555
+
+Handler = http.server.SimpleHTTPRequestHandler
+
+with socketserver.TCPServer(("", PORT), Handler) as httpd:
+    print("serving at port", PORT)
+    httpd.serve_forever()

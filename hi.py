@@ -1,10 +1,15 @@
-import http.server
-import socketserver
+two = [1,2]
+#t = two.append(3)
+two.append(3)
+t = two
+print(t)
 
-PORT = 5555
+tup = (1,2)
+tup = list(tup)
+print(tup)
 
-Handler = http.server.SimpleHTTPRequestHandler
+a = []
+print(len(a))
 
-with socketserver.TCPServer(("", PORT), Handler) as httpd:
-    print("serving at port", PORT)
-    httpd.serve_forever()
+for i in range(0,-1):
+    print("hi")

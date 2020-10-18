@@ -1,15 +1,30 @@
+'''
+given an array and return all the lists of index that satisfy: 
+    twoSum: two number's sum equals to a given number
+    threeSum: three number's sum equels to 0
+using hashmap to locate the needed index of number, reducing the time conplexity of twoSum to O(n^2)
+'''
+def fillHashmapRepeatedly (nums,hashmap={}):
+    for i in range(0,len(nums)):
+        if nums[i] in hashmap :
+            hashmap[nums[i]].append(i)
+        else :
+            hashmap[nums[i]] = [i]
+    return hashmap
+
 def twoSum(nums, target):
-    hashmap = {}
     result = []        
     for i in range(0,len(nums)):
-        hashmap[nums[i]]=i
-    for i in range(0,len(nums)):
-        a = target - nums[i]
-        j = hashmap.get(a)
-        if j is None or j <= i :
+        second_number = target - nums[i]
+        locationList = hashmap.get(second_number)
+        if locationList is None:
             continue
-        else:
-            result.append([i,j])
+        else :
+            for location in locationList:
+                if location <= i :
+                    continue
+                else :
+                    result.append([i,location])
     return result
 
 def threeSum(nums):
@@ -20,9 +35,10 @@ def threeSum(nums):
                 continue
             else:
                 t = two_result[:]
-                t1 = t.append(i)
+                t.append(i)
                 result.append(t)
     return result
 
-nums = [7,-3,-4,-3]
+nums = [7,-3,-4,-3,5,489,114514,0,-486]
+hashmap = fillHashmapRepeatedly(nums)
 print(threeSum(nums))

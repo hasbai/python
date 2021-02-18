@@ -1,0 +1,4 @@
+.vscode
+.idea
+*secret*
+*.log

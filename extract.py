@@ -1,4 +1,4 @@
-import os, shutil
+import os, shutil, re
 from rarfile import RarFile
 from zipfile import ZipFile
 
@@ -47,30 +47,25 @@ def extract(dir):
                 f.extractall()
         if mime == 'zip':
             unzip(name)
-        if mime in ('rar', 'zip', '7z', 'tar', 'gz'):
-            num[0] = num[0] + 1
-            print('{} of {}, {}% completed'.format(num[0], num[1], int(num[0]/num[1]*100)))
 
-def extract():
+def files():
     cwd = os.getcwd()
 
-    # extract(cwd)
     for name in get_files(cwd):
-        mime = name.split('.')[-1]
-        if mime in ('rar', 'zip', '7z', 'tar', 'gz'):
-            os.remove(name)
-            num[0] = num[0] + 1
-            print('{} of {}, {}% completed'.format(num[0], num[1], int(num[0]/num[1]*100)))
+        if re.findall('（.+）', name):
+            for n in re.findall('（.+）', name):
+                if len(n) > 15:
+                    os.rename(name, name.replace(n, ''))
+                    print(name)
  
     dirs = get_dirs(cwd)
     while dirs:
         os.chdir(os.path.join(cwd, dirs[0]))
         dirs.pop(0)
-        extract()
+        files()
     
     
-num = [0, 228]
-os.chdir('/mnt/h/电子书/亚马逊镇店之宝系列')
-extract()
+os.chdir('/mnt/hgst1/电子书/亚马逊镇店之宝系列')
+files()
 
 

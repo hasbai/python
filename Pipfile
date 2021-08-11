@@ -13,6 +13,7 @@ pandas = "*"
 numpy = "*"
 beautifulsoup4 = "*"
 lxml = "*"
+matplotlib = "*"
 
 [dev-packages]
 autopep8 = "*"

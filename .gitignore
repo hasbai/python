@@ -4,6 +4,7 @@
 *.log
 *.json
 *.txt
+*.csv
 config.py
 build
 dist

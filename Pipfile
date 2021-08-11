@@ -5,9 +5,17 @@ name = "pypi"
 
 [packages]
 pyinstaller = "*"
-httpx = "*"
+httpx = {extras = ["http2"], version = "*"}
+pyautogui = "*"
+pydirectinput = "*"
+pynput = "*"
+pandas = "*"
+numpy = "*"
+beautifulsoup4 = "*"
+lxml = "*"
 
 [dev-packages]
+autopep8 = "*"
 
 [requires]
 python_version = "3.9"

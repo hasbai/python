@@ -1,40 +1,78 @@
 import numpy as np
 import pandas as pd
+from matplotlib import pyplot as plt
 
 
 class Strategy:
     name = 'strategy'
 
-    def __init__(self, percentage=30):
+    def __init__(self, step=30):
+        self.step = step
+        self.index = 0
         self.cost = 1.0
         self.revenue = 0.0
-        value = np.full(len(df.columns), self.cost / len(df.columns))
-        self.amount = value / df.iloc[0]
-        self.percentage = percentage
+        self.num = len(df.columns)
+        self.price = df.iloc[0]
+        self.amount = np.full(self.num, self.cost / self.num) / self.price
 
-    def buy(self, index, price):
-        delta_money = price * self.amount[index]
+    def buy(self, index, percentage=None, money=None, amount=None):
+        price = self.price[index]
+        if amount is not None:
+            assert amount >= 0
+            pass
+        elif percentage is not None:
+            amount = self.amount[index] * percentage
+        elif money is not None:
+            assert money >= 0
+            amount = money / price
+        assert amount >= 0
+
+        delta_money = price * amount
         if self.revenue >= delta_money:
             self.revenue -= delta_money
         else:
             self.cost += delta_money
-        self.amount[index] *= 1 + self.percentage / 100
+        self.amount[index] += amount
 
-    def sell(self, index, price):
-        delta_money = price * self.amount[index]
-        self.revenue += delta_money
-        self.amount[index] *= 1 - self.percentage / 100
+    def sell(self, index, percentage=None, money=None, amount=None):
+        price = self.price[index]
+        if amount is not None:
+            assert amount >= 0
+            pass
+        elif percentage is not None:
+            amount = self.amount[index] * percentage
+        elif money is not None:
+            assert money >= 0
+            amount = money / price
+        assert 0 <= amount <= self.amount[index]
+
+        delta_money = price * amount
+        if delta_money < self.cost - 1:
+            self.cost -= delta_money
+        else:
+            self.revenue += delta_money
+        self.amount[index] -= amount
 
     def profit(self):
-        value = self.amount * df.iloc[-1]
-        profit = (value.sum() + self.revenue) / self.cost - 1
+        profit = np.sum(self.amount * self.price) + self.revenue - self.cost
         return profit
 
-    def main(self, profit=None):
-        if not profit:
-            profit = self.profit()
-        print('profit of strategy {} is {:.1%}'.format(self.name, profit))
-        return profit
+    def to_results(self):
+        if self.name not in results.columns:
+            results[self.name] = np.zeros(len(df))
+        results.loc[results.index[self.index], self.name] = self.profit()
+
+    def calculate(self):
+        pass
+
+    def main(self):
+        for i in range(len(df)):
+            self.index = i
+            self.price = df.iloc[i]
+            if i % self.step == 0 and i >= self.step:
+                self.calculate()
+            self.to_results()
+        print('profit of strategy {} is {:.1%}'.format(self.name, self.profit()))
 
 
 class Lazy(Strategy):
@@ -43,36 +81,54 @@ class Lazy(Strategy):
         self.name = 'lazy'
 
 
-class Mean(Strategy):
-    def __init__(self, limit=0.3, step=30):
-        super().__init__()
-        self.name = 'mean(limit={}, step={})'.format(limit, step)
+class Limit(Strategy):
+    def __init__(self, limit=0.3, percentage=0.3, step=30):
         self.limit = limit
+        self.percentage = percentage
         self.step = step
-
-    def calculate(self, start):
-        for i in range(start + self.step, len(df), self.step):
-            up_down = df.iloc[i] / df.iloc[i - self.step] - 1
-            for j in range(len(up_down)):
-                if up_down[j] >= self.limit:
-                    self.sell(index=j, price=df.iloc[i, j])
-                if -up_down[j] >= self.limit:
-                    self.buy(index=j, price=df.iloc[i, j])
-        profit = self.profit()
+        self.name = 'limit(limit={}, step={})'.format(limit, step)
         super().__init__()
-        return profit
 
-    def main(self, profit=None):
-        results = []
-        for i in range(self.step):
-            results.append(self.calculate(start=i))
-        profit = np.mean(results)
-        super().main(profit=profit)
+    def calculate(self):
+        up_down = df.iloc[self.index] / df.iloc[self.index - self.step]
+        avg_up_down = np.mean(up_down)
+        for j in range(self.num):
+            deviation = up_down[j] / avg_up_down
+            percentage = min(abs(deviation - 1) * 1, 1)
+            if deviation >= 1:
+                self.sell(index=j, percentage=percentage)
+            else:
+                self.buy(index=j, percentage=percentage)
+
+
+class Balance(Strategy):
+    def __init__(self, step=30):
+        super().__init__(step=step)
+        self.name = 'balance(step={})'.format(self.step)
+
+    def calculate(self):
+        avg_money = np.mean(self.price * self.amount)
+
+        for j in range(self.num):
+            money = self.price[j] * self.amount[j]
+            delta = money - avg_money
+            if delta >= 0:
+                self.sell(index=j, money=delta)
+            else:
+                self.buy(index=j, money=-delta)
 
 
 if __name__ == '__main__':
     df = pd.read_csv('funds.csv', index_col=0)
+    results = pd.DataFrame(index=df.index)
 
     Lazy().main()
-    for i in range(0, 50):
-        Mean(limit=i / 100).main()
+    # Balance().main()
+    # Limit().main()
+    for i in range(1, 13):
+        Balance(step=i * 30).main()
+    # for i in range(0, 50):
+    #     Limit(limit=i / 100).main()
+
+    results.plot()
+    plt.show()

@@ -1,0 +1,6 @@
+li = input('输入原始列表：')
+li = eval(li)
+li.sort()
+li.pop(0)
+li.pop()
+print(f'最后得分（保留两位小数）：{sum(li) / len(li) :.2f}')

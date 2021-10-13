@@ -1,6 +1,6 @@
 import random
 
-li = [random.randint(1,10) for i in range(20)]
+li = [random.randint(1, 10) for i in range(20)]
 
 dic = {}
 for i in range(10):

@@ -6,7 +6,12 @@ dic = {
     5: 'Five'
 }
 
-key = int(input('Please input a key:'))
+key = input('Please input a key:')
+try:
+    key = int(key)
+except ValueError:
+    pass
+
 value = dic.get(key)
 
 output = value if value else '您输入的键有误！'

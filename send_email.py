@@ -1,6 +1,6 @@
 import smtplib
 from email.mime.text import MIMEText
-import config, json
+import config
 
 
 def send_email(title, content, receivers):

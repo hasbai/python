@@ -216,5 +216,5 @@ Commands:
 
 
 if __name__ == '__main__':
-    NAME = '嘉然今天吃什么'
+    NAME = 'Tommy'
     main()

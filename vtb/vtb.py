@@ -1,10 +1,12 @@
+import base64
+import json
+import os
+# import readline
+import pickle
 import random
 import threading
-import readline
-import pickle
-import os
-import json
-import base64
+
+from PIL import Image
 
 
 class Value:
@@ -166,6 +168,19 @@ def func_timer():
     timer.start()
 
 
+def show_image():
+    if '七海' in NAME:
+        name = '010'
+    elif '嘉然' in NAME:
+        name = '嘉然'
+    else:
+        return
+
+    filename = name + '/' + random.choice(os.listdir(name))
+    with open(filename, 'rb') as f:
+        Image.open(f).show()
+
+
 def main():
     global time, vtb
 
@@ -180,8 +195,15 @@ def main():
         vtb = Vtb()
 
     # 初始输出
+    if '七海' in NAME:
+        description = '可爱的鲨鱼'
+    elif '嘉然' in NAME:
+        description = '甜甜的小草莓'
+    else:
+        description = '可爱的猫咪'
+
     print(f'''
-我的名字叫{NAME}，一只可爱的猫咪....
+我的名字叫{NAME}，一只{description}....
 你可以和我一起散步，玩耍，你也需要给我好吃的东西，带我去看病，也可以让我发呆.....
 Commands:
 1. walk: 散步
@@ -200,10 +222,7 @@ Commands:
         # 输入
         print()
         command = input('你想：').strip()
-        if command != 'bye':
-            vtb.command(command)
-        # 保存并退出
-        else:
+        if command == 'bye':  # 保存并退出
             print('记得来找我！Bye......')
             timer.cancel()
             save = {
@@ -213,6 +232,10 @@ Commands:
             with open('save.json', 'w') as f:
                 json.dump(save, f)
             break
+        elif command == '1':
+            show_image()
+        else:
+            vtb.command(command)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,3 @@
+[submodule "words/data"]
+	path = words/data
+	url = https://github.com/mahavivo/english-wordlists.git

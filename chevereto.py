@@ -3,7 +3,7 @@ import re
 import httpx
 
 if __name__ == '__main__':
-    URL = 'https://pic.salve.cf'
+    URL = 'https://pic.hath.top'
     with httpx.Client() as c:
         # 获取 token
         r = c.get(f'{URL}/upload')
